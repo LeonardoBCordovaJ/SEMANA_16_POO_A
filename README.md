@@ -5,35 +5,27 @@
 **Materia:** Programación Orientada a Objetos (POO)
 **Herramientas:** PyCharm, Python 3.14, Tkinter, pyinstaller
 
-## Descripción
-Aplicación de escritorio modular para gestionar tareas diarias. Desarrollada con arquitectura por capas (Modelo, Servicio, UI) aplicando principios de POO y manejo de eventos con Tkinter.
+# Novedades: Semana 16 - Interacción Avanzada
 
-## Estructura de carpetas
-```text
-lista_tareas_app/
-├── main.py
-├── modelos/
-│   ├── __init__.py
-│   └── tarea.py
-├── servicios/
-│   ├── __init__.py
-│   └── tarea_servicio.py
-└── ui/
-    ├── __init__.py
-    └── app_tkinter.py
-```
+En esta versión se han incorporado **atajos de teclado (shortcuts)** para mejorar la usabilidad y accesibilidad del sistema, permitiendo gestionar las tareas sin necesidad de usar el mouse exclusivamente.
 
-## Funcionalidades
-Añadir tarea: Escribir descripción y presionar el botón o la tecla Enter.
-Estado visual: Tareas pendientes en rojo, completadas en azul.
-Marcar completada: Botón o doble clic sobre la tarea.
-Eliminar: Con mensaje de confirmación previa.
-Campo vacío: No permite agregar tareas sin descripción.
-Cierre seguro: Confirmación al cerrar la ventana.
-Tooltips: Descripción breve al pasar el mouse sobre cada botón.
+### Atajos de Teclado Implementados:
+- **`Enter`**: Añadir una nueva tarea una vez escrita la descripción.
+- **`C` / `c`**: Marcar la tarea seleccionada como **Completada** (se vuelve verde).
+- **`D` / `d` o `Delete`**: **Eliminar** la tarea seleccionada tras confirmación.
+- **`Escape`**: **Cerrar** la aplicación solicitando una confirmación de salida.
 
-# #Principios POO Aplicados
-Encapsulamiento: Atributos privados en la clase Tarea.
-Abstracción: TareaServicio oculta la lógica a la interfaz.
-Herencia: AppTareas hereda de tk.Tk.
-Inyección de Dependencias: El servicio se inyecta desde main.py.
+### Mejoras Técnicas:
+- **Evento de Doble Clic**: Se mantiene la funcionalidad de doble clic sobre una tarea para marcarla como completada.
+- **Gestión de Foco**: Mejora en la fluidez de entrada de datos al permitir añadir tareas con Enter.
+- **Validación Robusta**: Se evitan mensajes de advertencia intrusivos al usar atajos de teclado sin elementos seleccionados, mejorando la experiencia de usuario (UX).
+- **Código Documentado**: Se han añadido comentarios y docstrings para facilitar la lectura y el mantenimiento siguiendo las buenas prácticas de Python.
+
+---
+
+### Estructura de Capas (Evolución)
+Se mantiene estrictamente la arquitectura modular:
+1. **`modelos/`**: Clase `Tarea` (datos puros).
+2. **`servicios/`**: Lógica de gestión CRUD (procesamiento).
+3. **`ui/`**: Interfaz con **Tkinter** y manejo avanzado de eventos `bind()`.
+4. **`main.py`**: Inyección de dependencias y arranque del sistema.
