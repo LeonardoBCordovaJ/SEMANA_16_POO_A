@@ -22,7 +22,7 @@ class AppTareas(tk.Tk):
         self.resizable(True, True)
         self.configure(bg="#f0f3f5")
 
-        # Interceptar el cierre de ventana para pedir confirmación
+        # Interceptar el cierre de ventana para pedir confirmación (Click en X)
         self.protocol("WM_DELETE_WINDOW", self._confirmar_cierre)
 
         self._crear_componentes()
@@ -52,7 +52,7 @@ class AppTareas(tk.Tk):
                                     relief="solid", bd=1, width=45)
         self.entry_tarea.pack(side="left", padx=(0, 10))
 
-        # Evento de teclado: Enter agrega la tarea
+        # Evento de teclado: Enter agrega la tarea (Ya existente)
         self.entry_tarea.bind("<Return>", lambda e: self._agregar_tarea())
 
         # BOTONES
@@ -78,9 +78,9 @@ class AppTareas(tk.Tk):
         self.btn_eliminar.pack(side="left", padx=6)
 
         # Tooltips al pasar el mouse sobre los botones
-        self._agregar_tooltip(self.btn_agregar, "Añade una nueva tarea a la lista")
-        self._agregar_tooltip(self.btn_completar, "Marca la tarea seleccionada como completada")
-        self._agregar_tooltip(self.btn_eliminar, "Elimina la tarea seleccionada de la lista")
+        self._agregar_tooltip(self.btn_agregar, "TECLA ´ENTER´ - Añade tarea a la lista.")
+        self._agregar_tooltip(self.btn_completar, "Tecla ´C´ - Marca tarea Completada.")
+        self._agregar_tooltip(self.btn_eliminar, "Tecla ´D´ - Elimina una tarea del listado.")
 
         # TABLA (Treeview)
         tabla_frame = tk.Frame(self, bg="#f0f3f5")
@@ -97,7 +97,7 @@ class AppTareas(tk.Tk):
         self.tabla.column("descripcion", width=400, anchor="w")
         self.tabla.column("estado", width=120, anchor="center")
 
-        # Colores por estado: rojo=pendiente, azul=completada
+        # Colores por estado: rojo=pendiente, verde=completada (Semana 16)
         self.tabla.tag_configure("pendiente", foreground="white", background="#e74c3c")
         self.tabla.tag_configure("completada", foreground="white", background="#27ae60")
 
@@ -108,6 +108,22 @@ class AppTareas(tk.Tk):
 
         # Evento de ratón: doble clic marca como completada
         self.tabla.bind("<Double-1>", lambda e: self._marcar_completada())
+
+        # ------------------------------------------------------------------ #
+        #  ATAJOS DE TECLADO (NUEVO SEMANA 16)                               #
+        # ------------------------------------------------------------------ #
+
+        # Cerrar app con Escape
+        self.bind("<Escape>", lambda e: self._confirmar_cierre())
+
+        # Marcar completada con 'C' o 'c'
+        self.bind("<KeyPress-c>", lambda e: self._marcar_completada())
+        self.bind("<KeyPress-C>", lambda e: self._marcar_completada())
+
+        # Eliminar con 'D', 'd' o la tecla 'Delete' (Supr)
+        self.bind("<KeyPress-d>", lambda e: self._eliminar_tarea())
+        self.bind("<KeyPress-D>", lambda e: self._eliminar_tarea())
+        self.bind("<Delete>", lambda e: self._eliminar_tarea())
 
     # ------------------------------------------------------------------ #
     #  TOOLTIP                                                             #
@@ -152,12 +168,10 @@ class AppTareas(tk.Tk):
             self._refrescar_tabla()
 
     def _marcar_completada(self):
-        """Marca la tarea seleccionada como completada y cambia su color a azul."""
+        """Marca la tarea seleccionada como completada y cambia su color."""
         sel = self.tabla.selection()
         if not sel:
-            messagebox.showwarning("Sin selección",
-                                   "Selecciona una tarea de la lista para marcarla.")
-            return
+            return  # No mostrar warning en atajo de teclado para no molestar
 
         id_tarea = int(self.tabla.set(sel[0], "id"))
         if self.servicio.completar_tarea(id_tarea):
@@ -167,9 +181,7 @@ class AppTareas(tk.Tk):
         """Elimina la tarea seleccionada con confirmación previa."""
         sel = self.tabla.selection()
         if not sel:
-            messagebox.showwarning("Sin selección",
-                                   "Selecciona una tarea de la lista para eliminar.")
-            return
+            return  # No mostrar warning en atajo de teclado para no molestar
 
         id_tarea = int(self.tabla.set(sel[0], "id"))
         descripcion = self.tabla.set(sel[0], "descripcion")
@@ -177,7 +189,6 @@ class AppTareas(tk.Tk):
         if messagebox.askyesno("Confirmar eliminación",
                                f"¿Deseas eliminar la tarea:\n'{descripcion}'?"):
             if self.servicio.eliminar_tarea(id_tarea):
-                messagebox.showinfo("Éxito", "Tarea eliminada correctamente.")
                 self._refrescar_tabla()
 
     def _confirmar_cierre(self):
